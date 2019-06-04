@@ -531,6 +531,11 @@ listling.ItemElement = class extends HTMLLIElement {
                 "listling-item-may-modify",
                 this._data.may(null, "item-modify", this._data.lst && this._data.lst.mode)
             );
+
+            this.classList.toggle(
+                "listling-item-has-content",
+                this._data.item && (this._data.item.resource || this._data.item.text)
+            );
         };
         this._data.watch("item", updateClass);
         this._data.watch("lst", updateClass);

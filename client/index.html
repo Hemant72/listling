@@ -520,13 +520,6 @@
                     </small>
                 </label>
 
-                <p class="listling-detail listling-item-mode-view" title="Edited by">
-                    <i class="fa fa-pencil-alt"></i>
-                    <span data-content="join item.authors 'user'">
-                        <template><micro-user data-user="user"></micro-user></template>
-                    </span>
-                </p>
-
                 <ul is="micro-menu" class="listling-item-mode-edit">
                     <li>
                         <button is="micro-button" class="action" title="⌨ Enter" data-run="edit">
@@ -541,6 +534,15 @@
                     </li>
                 </ul>
             </div>
+                <footer style="border-top: 1px solid #ddd;" class="listling-item-mode-view">
+                <p class="listling-detail" title="Edited by" style="margin: 0.375rem; text-align: left;">
+                    <i class="fa fa-pencil-alt"></i> Edited by
+                    <span data-content="join item.authors 'user'">
+                        <template><micro-user data-user="user"></micro-user></template>
+                    </span>
+                </p>
+                </footer>
+
         </form>
     </template>
     <style>
@@ -556,8 +558,12 @@
         }
 
         [is=listling-item] header {
-            border-bottom: 1px solid var(--micro-color-delimiter);
+            /*border-bottom: 1px solid var(--micro-color-delimiter);*/
             margin: 0;
+        }
+
+        .listling-item-content {
+            border-top: 1px solid var(--micro-color-delimiter);
         }
 
         [is=listling-item] .micro-ol-handle {
@@ -629,6 +635,8 @@
             row-gap: var(--micro-size-xs);
         }
 
+        [is=listling-item]:not(:focus-within) footer,
+        [is=listling-item].listling-item-mode-view:not(.listling-item-has-content) .listling-item-content,
         [is=listling-item]:not(.listling-item-mode-view) .listling-item-mode-view,
         [is=listling-item]:not(.listling-item-mode-edit) .listling-item-mode-edit,
         [is=listling-item].listling-item-trashed .micro-ol-handle,
