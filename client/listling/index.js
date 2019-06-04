@@ -479,26 +479,45 @@ listling.ItemElement = class extends HTMLLIElement {
                 }
             },
 
-            check: async() => {
+            checkUncheck: async() => {
+                const op = this._data.item.checked ? "uncheck" : "check";
                 try {
                     const item = await ui.call(
-                        "POST", `/api/lists/${ui.page.list.id}/items/${this._data.item.id}/check`
+                        "POST", `/api/lists/${ui.page.list.id}/items/${this._data.item.id}/${op}`
                     );
-                    ui.dispatchEvent(new CustomEvent("item-check", {detail: {item}}));
+                    setTimeout(() => {
+                        ui.dispatchEvent(new CustomEvent(`item-${op}`, {detail: {item}}));
+                    });
                 } catch (e) {
                     ui.handleCallError(e);
                 }
             },
 
-            uncheck: async() => {
-                try {
-                    const item = await ui.call(
-                        "POST", `/api/lists/${ui.page.list.id}/items/${this._data.item.id}/uncheck`
-                    );
-                    ui.dispatchEvent(new CustomEvent("item-uncheck", {detail: {item}}));
-                } catch (e) {
-                    ui.handleCallError(e);
+            expanded: false,
+
+            toggleExpand: () => {
+                // setTimeout(() => {
+                this._data.expanded = !this._data.expanded;
+                // });
+            },
+
+            expand: event => {
+                // const inter = micro.findAncestor(event.target, e => ["A", "BUTTON"].includes(e.tagName));
+                const inter = micro.findAncestor(event.target, e => e.tabIndex !== -1, this);
+                if (inter) {
+                    return;
                 }
+                const foo = ev => {
+                    console.log(ev.target);
+                    if (!(this === ev.target || this.contains(ev.target))) {
+                        this._data.expanded = false;
+                        document.removeEventListener("click", foo);
+                        document.removeEventListener("focusin", foo);
+                    }
+                };
+                document.addEventListener("click", foo);
+                document.addEventListener("focusin", foo);
+                this._data.expanded = true;
             },
 
             may: (ctx, op, mode) => {
@@ -536,19 +555,24 @@ listling.ItemElement = class extends HTMLLIElement {
                 "listling-item-has-content",
                 this._data.item && (this._data.item.resource || this._data.item.text)
             );
+            this.classList.toggle("listling-item-expanded", this._data.expanded);
         };
         this._data.watch("item", updateClass);
         this._data.watch("lst", updateClass);
         this._data.watch("editMode", updateClass);
+        this._data.watch("expanded", updateClass);
         updateClass();
 
         this.tabIndex = 0;
+        // this.title = "Expand (Space)";
         this.shortcutContext = new micro.keyboard.ShortcutContext(this);
         let move = dir => micro.util.dispatchEvent(this, new CustomEvent("move", {detail: {dir}}));
         this.shortcutContext.add("Alt+ArrowUp", move.bind(null, "up"));
         this.shortcutContext.add("Alt+ArrowDown", move.bind(null, "down"));
 
         this._form = this.querySelector("form");
+
+        //this.addEventListener("focus", this._data.expand);
     }
 
     get item() {

@@ -408,23 +408,27 @@
     </style>
 
     <template class="listling-item-template">
-        <form>
+        <form data-onclick="expand" style="cursor: pointer;" data-shortcut="new Shortcut 'Enter'">
             <header class="micro-panel">
                 <div class="micro-ol-handle listling-item-mode-view"
                      title="Move (⌨ Alt + ↑ / Alt + ↓)" tabindex="0">
                 </div>
 
-                <div class="listling-item-mode-view" data-content="switch item.checked">
-                    <template>
-                        <button
-                            is="micro-button" type="button" class="listling-item-uncheck action"
-                            data-run="uncheck" data-disabled="isCheckDisabled item.trashed lst.mode"
-                            data-shortcut="new Shortcut 'X' 'Uncheck'"
-                        >
-                            <i class="fa fa-fw fa-check-square"></i>
-                        </button>
-                    </template>
-                    <template>
+                <div class="listling-item-mode-view">
+                    <button
+                        is="micro-button" type="button" class="listling-item-check action"
+                        data-run="checkUncheck"
+                        data-disabled="isCheckDisabled item.trashed lst.mode"
+                        data-shortcut="new Shortcut 'X' 'Check / Uncheck'"
+                    >
+                        <i
+                            class="fa-fw" data-class-fa="item.checked"
+                            data-class-fa-check-square="item.checked"
+                            data-class-far="not item.checked"
+                            data-class-fa-square="not item.checked"
+                        ></i>
+                    </button>
+                    <!--<template>
                         <button
                             is="micro-button" type="button" class="listling-item-check action"
                             data-run="check" data-disabled="isCheckDisabled item.trashed lst.mode"
@@ -432,10 +436,10 @@
                         >
                             <i class="far fa-fw fa-square"></i>
                         </button>
-                    </template>
+                    </template>-->
                 </div>
 
-                <h1>
+                <h1 data-oclick="expand">
                     <span class="listling-item-mode-view" data-content="item.title"></span>
                     <label class="listling-item-mode-edit">
                         <input name="title" placeholder="Title" required="required"
@@ -445,6 +449,11 @@
                 <ul is="micro-menu"
                     class="listling-item-menu micro-secondary listling-item-mode-view"
                 >
+                    <!--<li class="listling-item-activity">
+                        <button is="micro-button" data-run="toggleExpand" type="button" class="link">
+                            <i data-class-fa-chevron-down="not expanded" data-class-fa-chevron-up="expanded" class="fa fa-fw xfa-comments xfa-chevron-down xfa-info-circle xfa-history"></i>
+                        </button>
+                    </li>-->
                     <li class="listling-item-restore">
                         <button is="micro-button" type="button" class="action" data-run="restore"
                                 data-shortcut="new Shortcut 'R'">
@@ -483,7 +492,7 @@
                 </ul>
             </header>
 
-            <div class="listling-item-content">
+            <div class="listling-item-content" dta-onclick="expand">
                 <dl class="listling-item-meta">
                     <dt class="listling-item-location" title="Location">
                         <i class="fa fa-fw fa-map-marker-alt"></i>
@@ -536,6 +545,8 @@
             </div>
                 <footer style="border-top: 1px solid #ddd;" class="listling-item-mode-view">
                 <p class="listling-detail" title="Edited by" style="margin: 0.375rem; text-align: left;">
+            <i class="fa fa-fw fa-user-cog"></i> Item by
+            <micro-user data-user="item.authors.0"></micro-user> ·
                     <i class="fa fa-pencil-alt"></i> Edited by
                     <span data-content="join item.authors 'user'">
                         <template><micro-user data-user="user"></micro-user></template>
@@ -583,12 +594,11 @@
                 var(--micro-color-delimiter);
         }
 
-        .micro-panel > div > .listling-item-check,
-        [is=listling-item].listling-item-trashed .micro-panel > div > .listling-item-uncheck {
+        [is=listling-item] .listling-item-check i {
             color: var(--micro-color-border);
         }
 
-        .micro-panel > div > .listling-item-uncheck {
+        [is=listling-item].listling-item-checked:not(.listling-item-trashed) .listling-item-check i {
             color: forestgreen;
         }
 
@@ -635,7 +645,10 @@
             row-gap: var(--micro-size-xs);
         }
 
-        [is=listling-item]:not(:focus-within) footer,
+        [is=listling-item]:not(.listling-item-expanded) footer {
+            display: none;
+        }
+
         [is=listling-item].listling-item-mode-view:not(.listling-item-has-content) .listling-item-content,
         [is=listling-item]:not(.listling-item-mode-view) .listling-item-mode-view,
         [is=listling-item]:not(.listling-item-mode-edit) .listling-item-mode-edit,
